@@ -1,12 +1,11 @@
 import { createClient } from "@/utils/supabase/server"
 import Link from "next/link"
 import { Button, Card, CardContent, CardHeader, CardTitle } from "@/components/ui"
-import { PlusCircle, Search } from "lucide-react"
+import { PlusCircle } from "lucide-react"
 
 export default async function ProductsPage() {
   const supabase = await createClient()
 
-  // Get current user business_id
   const { data: { user } } = await supabase.auth.getUser()
   const { data: profile } = await supabase.from("profiles").select("id").eq("user_id", user?.id).single()
   const { data: business } = await supabase.from("businesses").select("id").eq("profile_id", profile?.id).single()
@@ -20,53 +19,55 @@ export default async function ProductsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Productos</h1>
+        <h1 className="text-[28px] font-bold tracking-tight text-brand-text font-serif">Productos</h1>
         <Link href="/dashboard/products/new">
           <Button className="flex items-center gap-2">
-            <PlusCircle className="h-4 w-4" />
+            <PlusCircle className="h-5 w-5" />
             <span className="hidden sm:inline">Nuevo Producto</span>
           </Button>
         </Link>
       </div>
 
       <Card>
-        <CardHeader className="pb-4">
-          <CardTitle>Inventario</CardTitle>
+        <CardHeader className="pb-4 border-b border-brand-border">
+          <CardTitle className="text-xl">Inventario</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0 px-0 sm:px-6">
           {products?.length === 0 ? (
-             <div className="flex flex-col items-center justify-center p-8 text-center text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-200">
-               <PackageIcon className="h-10 w-10 text-gray-400 mb-2" />
-               <p className="text-lg font-medium">No tienes productos aún</p>
+             <div className="flex flex-col items-center justify-center p-12 mt-6 text-center text-brand-muted bg-brand-secondary/30 rounded-[12px] border border-dashed border-brand-border">
+               <div className="p-3 bg-white rounded-full mb-3 shadow-[0_4px_12px_rgba(255,127,127,0.05)]">
+                 <PackageIcon className="h-8 w-8 text-brand-primary" />
+               </div>
+               <p className="text-lg font-bold text-brand-text mb-1 font-serif">No tienes productos aún</p>
                <p className="text-sm">Agrega tu primer producto para empezar a gestionar tu inventario.</p>
              </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left text-gray-500">
-                <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-sm text-left text-brand-muted">
+                <thead className="text-xs text-brand-text uppercase bg-brand-secondary/50 border-b border-brand-border rounded-t-lg">
                   <tr>
-                    <th scope="col" className="px-4 py-3">Nombre</th>
-                    <th scope="col" className="px-4 py-3 hidden sm:table-cell">Categoría</th>
-                    <th scope="col" className="px-4 py-3">Precio Venta</th>
-                    <th scope="col" className="px-4 py-3 hidden md:table-cell">Costo Unitario</th>
-                    <th scope="col" className="px-4 py-3">Stock</th>
-                    <th scope="col" className="px-4 py-3">Estado</th>
+                    <th scope="col" className="px-6 py-4 font-semibold rounded-tl-lg">Nombre</th>
+                    <th scope="col" className="px-6 py-4 font-semibold hidden sm:table-cell">Categoría</th>
+                    <th scope="col" className="px-6 py-4 font-semibold">Precio Venta</th>
+                    <th scope="col" className="px-6 py-4 font-semibold hidden md:table-cell">Costo Unit.</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-center">Stock</th>
+                    <th scope="col" className="px-6 py-4 font-semibold rounded-tr-lg">Estado</th>
                   </tr>
                 </thead>
                 <tbody>
                   {products?.map((product) => (
-                    <tr key={product.id} className="bg-white border-b hover:bg-gray-50">
-                      <td className="px-4 py-3 font-medium text-gray-900">{product.name}</td>
-                      <td className="px-4 py-3 hidden sm:table-cell">{product.category || "-"}</td>
-                      <td className="px-4 py-3 text-green-600 font-semibold">${product.sale_price}</td>
-                      <td className="px-4 py-3 hidden md:table-cell">${product.cost_price}</td>
-                      <td className="px-4 py-3">
-                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${product.stock <= 5 ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"}`}>
+                    <tr key={product.id} className="bg-white border-b border-brand-border hover:bg-brand-secondary/30 transition-colors">
+                      <td className="px-6 py-4 font-semibold text-brand-text">{product.name}</td>
+                      <td className="px-6 py-4 hidden sm:table-cell">{product.category || "-"}</td>
+                      <td className="px-6 py-4 font-mono font-bold text-brand-text">${product.sale_price}</td>
+                      <td className="px-6 py-4 hidden md:table-cell font-mono">${product.cost_price}</td>
+                      <td className="px-6 py-4 text-center">
+                         <span className={`px-2.5 py-1 rounded-[8px] text-[11px] font-bold uppercase tracking-wider ${product.stock <= 5 ? "bg-red-50 text-brand-danger border border-red-100" : "bg-emerald-50 text-brand-success border border-emerald-100"}`}>
                            {product.stock} unids.
                          </span>
                       </td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${product.is_active ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
+                      <td className="px-6 py-4">
+                        <span className={`px-2.5 py-1 rounded-[8px] text-[11px] font-bold uppercase tracking-wider ${product.is_active ? "bg-emerald-50 text-brand-success border border-emerald-100" : "bg-brand-secondary/50 text-brand-muted border border-brand-border"}`}>
                           {product.is_active ? "Activo" : "Inactivo"}
                         </span>
                       </td>
@@ -84,18 +85,7 @@ export default async function ProductsPage() {
 
 function PackageIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="m7.5 4.27 9 5.15" />
       <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
       <path d="m3.3 7 8.7 5 8.7-5" />

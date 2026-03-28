@@ -11,54 +11,54 @@ export default async function ProfilePage() {
 
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
-      <h1 className="text-3xl font-bold tracking-tight text-gray-900">Perfil y Configuración</h1>
+      <h1 className="text-[28px] font-bold tracking-tight text-brand-text font-serif">Perfil y Configuración</h1>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Datos del Emprendedor</CardTitle>
+        <CardHeader className="border-b border-brand-border pb-4">
+          <CardTitle className="text-xl">Datos del Emprendedor</CardTitle>
           <CardDescription>Información personal asociada a tu cuenta.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-             <div>
-                <p className="text-sm font-medium text-gray-500">Nombre Completo</p>
-                <p className="text-base font-medium">{profile?.full_name}</p>
+        <CardContent className="pt-6">
+          <div className="grid gap-6 md:grid-cols-2">
+             <div className="bg-brand-secondary/30 p-4 rounded-[12px] border border-brand-border border-dashed">
+                <p className="text-sm font-semibold text-brand-muted mb-1 uppercase tracking-wider text-[11px]">Nombre Completo</p>
+                <p className="text-base font-medium text-brand-text">{profile?.full_name}</p>
              </div>
-             <div>
-                <p className="text-sm font-medium text-gray-500">Correo Electrónico</p>
-                <p className="text-base font-medium">{user?.email}</p>
+             <div className="bg-brand-secondary/30 p-4 rounded-[12px] border border-brand-border border-dashed">
+                <p className="text-sm font-semibold text-brand-muted mb-1 uppercase tracking-wider text-[11px]">Correo Electrónico</p>
+                <p className="text-base font-medium text-brand-text">{user?.email}</p>
              </div>
           </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Datos del Negocio</CardTitle>
-          <CardDescription>Información del emprendimiento.</CardDescription>
+        <CardHeader className="border-b border-brand-border pb-4">
+          <CardTitle className="text-xl">Datos del Negocio</CardTitle>
+          <CardDescription>Información del emprendimiento configurada durante el onboarding.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-             <div>
-                <p className="text-sm font-medium text-gray-500">Nombre del Negocio</p>
-                <p className="text-base font-medium">{business?.business_name}</p>
+        <CardContent className="pt-6">
+          <div className="grid gap-6 md:grid-cols-2">
+             <div className="bg-brand-secondary/30 p-4 rounded-[12px] border border-brand-border border-dashed">
+                <p className="text-sm font-semibold text-brand-muted mb-1 uppercase tracking-wider text-[11px]">Nombre del Negocio</p>
+                <p className="text-base font-medium text-brand-text font-serif">{business?.business_name}</p>
              </div>
-             <div>
-                <p className="text-sm font-medium text-gray-500">Categoría</p>
-                <p className="text-base font-medium">{business?.business_category}</p>
+             <div className="bg-brand-secondary/30 p-4 rounded-[12px] border border-brand-border border-dashed">
+                <p className="text-sm font-semibold text-brand-muted mb-1 uppercase tracking-wider text-[11px]">Categoría</p>
+                <p className="text-base font-medium text-brand-text">{business?.business_category}</p>
              </div>
-             <div>
-                <p className="text-sm font-medium text-gray-500">Instagram</p>
-                <p className="text-base font-medium">{business?.instagram_handle || "No definido"}</p>
+             <div className="bg-brand-secondary/30 p-4 rounded-[12px] border border-brand-border border-dashed md:col-span-2">
+                <p className="text-sm font-semibold text-brand-muted mb-1 uppercase tracking-wider text-[11px]">Instagram</p>
+                <p className="text-base font-medium text-brand-text">{business?.instagram_handle || "No definido"}</p>
              </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-orange-200 bg-orange-50">
+      <Card className="border-orange-200 bg-orange-50/50 shadow-none">
         <CardHeader>
-          <CardTitle className="text-orange-900">Modo Académico: Generar Datos de Prueba</CardTitle>
-          <CardDescription className="text-orange-800">
+          <CardTitle className="text-orange-900 text-xl">Generar Datos de Prueba</CardTitle>
+          <CardDescription className="text-orange-800/80">
             ¿Tu dashboard está vacío? Usa este botón para auto-generar productos, ventas y gastos de ejemplo, 
             ideal para demostraciones de la clase de Innovación e IA.
           </CardDescription>
@@ -66,7 +66,7 @@ export default async function ProfilePage() {
         <CardContent>
           <form action={seedData}>
              <input type="hidden" name="businessId" value={business?.id} />
-             <Button type="submit" variant="destructive" className="bg-orange-600 hover:bg-orange-700">
+             <Button type="submit" variant="destructive" className="bg-orange-500 hover:bg-orange-600 hover:shadow-[0_8px_20px_rgba(249,115,22,0.35)]">
                Generar Datos Demo
              </Button>
           </form>

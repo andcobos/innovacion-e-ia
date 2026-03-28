@@ -4,24 +4,24 @@ import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
 export default async function NewProductPage(props: { searchParams: Promise<{ error?: string }> }) {
-  const searchParams = await props.searchParams
+  const searchParams = await props.searchParams;
   return (
-    <div className="flex flex-col gap-6 max-w-2xl mx-auto">
+    <div className="flex flex-col gap-8 max-w-2xl mx-auto">
       <div className="flex items-center gap-4">
         <Link href="/dashboard/products">
-          <Button variant="ghost" size="icon" className="rounded-full">
-             <ArrowLeft className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="rounded-full bg-white border border-brand-border shadow-sm hover:translate-y-0">
+             <ArrowLeft className="h-5 w-5 text-brand-text" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Nuevo Producto</h1>
-          <p className="text-sm text-gray-500">Agrega un nuevo producto a tu inventario</p>
+          <h1 className="text-[28px] font-bold tracking-tight text-brand-text font-serif">Nuevo Producto</h1>
+          <p className="text-sm text-brand-muted font-sans mt-0.5">Agrega un nuevo producto a tu inventario</p>
         </div>
       </div>
 
       <Card>
-        <CardContent className="pt-6">
-          <form action={createProduct} className="grid gap-5">
+        <CardContent className="pt-8">
+          <form action={createProduct} className="grid gap-6">
             <div className="grid gap-2">
               <Label htmlFor="name">Nombre del producto</Label>
               <Input id="name" name="name" required placeholder="Camisa de lino" />
@@ -54,10 +54,12 @@ export default async function NewProductPage(props: { searchParams: Promise<{ er
             </div>
 
             {searchParams?.error && (
-               <p className="text-sm text-red-500 font-medium">Error: {searchParams.error}</p>
+               <div className="p-3 bg-red-50 border border-red-100 rounded-[12px]">
+                 <p className="text-sm text-brand-danger font-semibold">Error: {searchParams.error}</p>
+               </div>
             )}
 
-            <div className="flex justify-end gap-3 mt-4">
+            <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-brand-border">
               <Link href="/dashboard/products">
                 <Button type="button" variant="outline">Cancelar</Button>
               </Link>

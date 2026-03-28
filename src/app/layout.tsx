@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ToastProvider } from "@/components/ui/toast-provider";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +29,12 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">{children}</body>
+      <body className="font-sans min-h-full flex flex-col bg-brand-bg text-brand-text selection:bg-brand-primary selection:text-white">
+        {children}
+        <Suspense fallback={null}>
+           <ToastProvider />
+        </Suspense>
+      </body>
     </html>
   );
 }

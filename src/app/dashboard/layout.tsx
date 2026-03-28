@@ -31,56 +31,70 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-gray-50 flex-col md:flex-row">
-      {/* Sidebar Navigation */}
-      <aside className="hidden md:flex flex-col w-64 border-r bg-white px-4 py-6">
-        <div className="flex h-14 items-center mb-6">
-          <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
-            <span className="text-xl text-blue-600 font-bold">FinanzasSaaS</span>
+    <div className="flex min-h-screen w-full bg-brand-bg flex-col md:flex-row font-sans">
+      {/* Sidebar Navigation (Desktop) */}
+      <aside className="hidden md:flex flex-col w-72 bg-gradient-to-b from-[#FFF0F3] to-[#F5F3FF] border-r border-brand-border px-6 py-8">
+        <div className="flex flex-col mb-10">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <span className="text-3xl text-brand-primary font-bold font-serif tracking-tight">FinanzasSaaS</span>
           </Link>
+          <span className="text-[13px] text-brand-muted mt-1 font-medium">Tu negocio, claro y simple</span>
         </div>
-        <nav className="grid gap-2 text-sm font-medium">
+        <nav className="flex flex-col gap-2 text-sm font-semibold">
           <Link
             href="/dashboard"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 hover:bg-gray-100"
+            className="flex items-center gap-3 rounded-[12px] px-4 py-3 text-brand-muted transition-all hover:text-brand-primary hover:bg-white hover:shadow-[0_4px_12px_rgba(255,127,127,0.05)]"
           >
-            <LayoutDashboard className="h-4 w-4" />
+            <div className="p-1.5 rounded-lg bg-transparent group-hover:bg-brand-secondary transition-colors text-inherit">
+               <LayoutDashboard className="h-5 w-5" />
+            </div>
             Dashboard
           </Link>
           <Link
             href="/dashboard/products"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 hover:bg-gray-100"
+            className="flex items-center gap-3 rounded-[12px] px-4 py-3 text-brand-muted transition-all hover:text-brand-primary hover:bg-white hover:shadow-[0_4px_12px_rgba(255,127,127,0.05)]"
           >
-            <Package className="h-4 w-4" />
+            <div className="p-1.5 rounded-lg bg-transparent transition-colors text-inherit">
+              <Package className="h-5 w-5" />
+            </div>
             Productos
           </Link>
           <Link
             href="/dashboard/sales"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 hover:bg-gray-100"
+            className="flex items-center gap-3 rounded-[12px] px-4 py-3 text-brand-muted transition-all hover:text-brand-primary hover:bg-white hover:shadow-[0_4px_12px_rgba(255,127,127,0.05)]"
           >
-            <ShoppingCart className="h-4 w-4" />
+            <div className="p-1.5 rounded-lg bg-transparent transition-colors text-inherit">
+              <ShoppingCart className="h-5 w-5" />
+            </div>
             Ventas
           </Link>
           <Link
             href="/dashboard/expenses"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 hover:bg-gray-100"
+            className="flex items-center gap-3 rounded-[12px] px-4 py-3 text-brand-muted transition-all hover:text-brand-primary hover:bg-white hover:shadow-[0_4px_12px_rgba(255,127,127,0.05)]"
           >
-            <ReceiptText className="h-4 w-4" />
+            <div className="p-1.5 rounded-lg bg-transparent transition-colors text-inherit">
+              <ReceiptText className="h-5 w-5" />
+            </div>
             Gastos
           </Link>
           <Link
             href="/dashboard/profile"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 hover:bg-gray-100"
+            className="flex items-center gap-3 rounded-[12px] px-4 py-3 text-brand-muted transition-all hover:text-brand-primary hover:bg-white hover:shadow-[0_4px_12px_rgba(255,127,127,0.05)]"
           >
-            <User className="h-4 w-4" />
-            Perfil & Negocio
+            <div className="p-1.5 rounded-lg bg-transparent transition-colors text-inherit">
+              <User className="h-5 w-5" />
+            </div>
+            Perfil
           </Link>
         </nav>
-        <div className="mt-auto pt-6 border-t flex flex-col gap-2">
-          <p className="text-sm font-medium px-3 truncate">{business.business_name}</p>
-          <p className="text-xs text-gray-500 px-3 truncate">{profile.full_name}</p>
+        
+        <div className="mt-auto pt-6 border-t border-white/50 flex flex-col gap-3">
+          <div className="px-2">
+            <p className="font-bold text-brand-text truncate font-serif">{business.business_name}</p>
+            <p className="text-xs text-brand-muted truncate mt-0.5">{profile.full_name}</p>
+          </div>
           <form action={logout}>
-            <Button variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50" type="submit">
+            <Button variant="ghost" className="w-full justify-start text-brand-danger hover:text-white hover:bg-brand-primary rounded-[12px]" type="submit">
               <LogOut className="h-4 w-4 mr-2" />
               Cerrar sesión
             </Button>
@@ -89,29 +103,45 @@ export default async function DashboardLayout({
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex flex-col flex-1 w-full">
-        {/* Mobile Header (simplified for prototype) */}
-        <header className="flex md:hidden h-14 items-center justify-between border-b bg-white px-4">
-          <Link href="/dashboard" className="font-semibold text-blue-600">
+      <div className="flex flex-col flex-1 w-full pb-20 md:pb-0">
+        
+        {/* Mobile Header */}
+        <header className="flex md:hidden h-16 items-center justify-between border-b border-brand-border bg-white px-6">
+          <Link href="/dashboard" className="font-bold font-serif text-xl text-brand-primary">
             FinanzasSaaS
           </Link>
           <form action={logout}>
-            <Button variant="ghost" size="sm" type="submit">Salir</Button>
+            <Button variant="ghost" size="sm" type="submit" className="text-brand-danger">Salir</Button>
           </form>
         </header>
 
-        {/* Mobile Nav Links (simplified bottom bar or just top links for MVP) */}
-        <div className="md:hidden flex overflow-x-auto border-b bg-white px-4 py-2 gap-4 text-sm font-medium">
-            <Link href="/dashboard" className="whitespace-nowrap">Dashboard</Link>
-            <Link href="/dashboard/products" className="whitespace-nowrap">Productos</Link>
-            <Link href="/dashboard/sales" className="whitespace-nowrap">Ventas</Link>
-            <Link href="/dashboard/expenses" className="whitespace-nowrap">Gastos</Link>
-            <Link href="/dashboard/profile" className="whitespace-nowrap">Perfil</Link>
-        </div>
-
-        <main className="flex-1 p-4 md:p-8 overflow-auto">
+        <main className="flex-1 p-6 md:p-10 lg:p-12 overflow-auto">
           {children}
         </main>
+
+        {/* Mobile Bottom Navigation Bar */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-brand-border flex items-center justify-around px-2 shadow-[0_-4px_24px_rgba(255,127,127,0.05)] z-50">
+            <Link href="/dashboard" className="flex flex-col items-center gap-1 p-2 text-brand-muted hover:text-brand-primary transition-colors">
+               <LayoutDashboard className="h-5 w-5" />
+               <span className="text-[10px] font-semibold">Inicio</span>
+            </Link>
+            <Link href="/dashboard/products" className="flex flex-col items-center gap-1 p-2 text-brand-muted hover:text-brand-primary transition-colors">
+               <Package className="h-5 w-5" />
+               <span className="text-[10px] font-semibold">Prods</span>
+            </Link>
+            <Link href="/dashboard/sales" className="flex flex-col items-center gap-1 p-2 text-brand-muted hover:text-brand-primary transition-colors">
+               <ShoppingCart className="h-5 w-5" />
+               <span className="text-[10px] font-semibold">Ventas</span>
+            </Link>
+            <Link href="/dashboard/expenses" className="flex flex-col items-center gap-1 p-2 text-brand-muted hover:text-brand-primary transition-colors">
+               <ReceiptText className="h-5 w-5" />
+               <span className="text-[10px] font-semibold">Gastos</span>
+            </Link>
+            <Link href="/dashboard/profile" className="flex flex-col items-center gap-1 p-2 text-brand-muted hover:text-brand-primary transition-colors">
+               <User className="h-5 w-5" />
+               <span className="text-[10px] font-semibold">Perfil</span>
+            </Link>
+        </div>
       </div>
     </div>
   )
