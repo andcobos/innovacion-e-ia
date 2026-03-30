@@ -62,7 +62,6 @@ export default async function SalesPage() {
                     <tr key={sale.id} className="bg-white border-b border-brand-border hover:bg-brand-secondary/30 transition-colors">
                       <td className="px-6 py-4">{new Date(sale.sale_date).toLocaleDateString()}</td>
                       <td className="px-6 py-4 font-semibold text-brand-text">
-                         {/* @ts-ignore - Supabase nested type workaround */}
                          {sale.products?.name || "Producto Eliminado"}
                       </td>
                       <td className="px-6 py-4 text-center font-mono">{sale.quantity}</td>

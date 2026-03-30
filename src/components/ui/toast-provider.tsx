@@ -17,9 +17,11 @@ export function ToastProvider() {
     const success = searchParams.get("success")
 
     if (error || message || success) {
-      if (error) setToast({ message: error, type: "error" })
-      else if (message) setToast({ message: message, type: "error" }) // Some messages acting as errors based on prev codebase
-      else if (success) setToast({ message: success, type: "success" })
+      setTimeout(() => {
+        if (error) setToast({ message: error, type: "error" })
+        else if (message) setToast({ message: message, type: "error" }) // Some messages acting as errors based on prev codebase
+        else if (success) setToast({ message: success, type: "success" })
+      }, 0)
 
       // Clean URL without refreshing page
       const newUrl = pathname

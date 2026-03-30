@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui"
 import { DollarSign, TrendingDown, TrendingUp, Package, AlertCircle, Lightbulb, ReceiptText } from "lucide-react"
 import { TrendChart } from "./trend-chart"
+import { SmartDashboardAnalysis } from "@/components/SmartDashboardAnalysis"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -23,11 +24,25 @@ export default async function DashboardPage() {
   const totalSales = sales?.reduce((acc, sale) => acc + Number(sale.total_sale_amount), 0) || 0
   const totalSoldUnits = sales?.reduce((acc, sale) => acc + Number(sale.quantity), 0) || 0
   
-  const cogs = sales?.reduce((acc, sale) => acc + (sale.quantity * Number((sale.products as any)?.cost_price || 0)), 0) || 0
-  const totalExpenses = expenses?.reduce((acc, exp) => acc + Number(exp.amount), 0) || 0
-  const fixedCosts = expenses?.filter(e => e.expense_type === "Fijo").reduce((acc, exp) => acc + Number(exp.amount), 0) || 0
+  let cogs = sales?.reduce((acc, sale) => acc + (sale.quantity * Number((sale.products as { cost_price?: number })?.cost_price || 0)), 0) || 0
+  const cogsExpenses = expenses?.filter(e => 
+    e.expense_category?.includes('Materia Prima') || 
+    e.expense_category?.includes('Empaque') || 
+    e.expense_category?.includes('Envío')
+  ).reduce((acc, exp) => acc + Number(exp.amount), 0) || 0
+  cogs += cogsExpenses
+
+  const totalExpenses = expenses?.filter(e => 
+    !(e.expense_category?.includes('Materia Prima') || 
+      e.expense_category?.includes('Empaque') || 
+      e.expense_category?.includes('Envío'))
+  ).reduce((acc, exp) => acc + Number(exp.amount), 0) || 0
+  
+  const fixedCosts = expenses?.filter(e => e.expense_type === "Fijo" || e.expense_category?.includes('Fijo')).reduce((acc, exp) => acc + Number(exp.amount), 0) || 0
   
   const estimatedProfit = totalSales - cogs - totalExpenses
+  const totalSalesCount = sales?.length || 0
+  const totalExpensesCount = expenses?.length || 0
   
   // Break-even logic
   let breakEvenUnits = 0
@@ -48,7 +63,7 @@ export default async function DashboardPage() {
     const monthYear = d.toLocaleString('es-ES', { month: 'short', year: '2-digit' })
     if (!monthlyData[monthYear]) monthlyData[monthYear] = { ventas: 0, gastos: 0, cogs: 0 }
     monthlyData[monthYear].ventas += Number(s.total_sale_amount)
-    monthlyData[monthYear].cogs += (s.quantity * Number((s.products as any)?.cost_price || 0))
+    monthlyData[monthYear].cogs += (s.quantity * Number((s.products as { cost_price?: number })?.cost_price || 0))
   })
 
   expenses?.forEach(e => {
@@ -72,6 +87,11 @@ export default async function DashboardPage() {
     const margin = p.sale_price > 0 ? ((p.sale_price - p.cost_price) / p.sale_price) * 100 : 0
     return { name: p.name, margin: margin.toFixed(1) }
   }) || []
+
+  // Calcular margen promedio real considerando todos los márgenes calculados
+  const avgMargin = margins.length > 0 
+    ? (margins.reduce((acc, m) => acc + Number(m.margin), 0) / margins.length).toFixed(1)
+    : "0"
 
   const lowStockThreshold = 5
   const lowStockProducts = products?.filter(p => p.stock <= lowStockThreshold && p.is_active) || []
@@ -251,33 +271,16 @@ export default async function DashboardPage() {
 
       {/* Main Content Grid existing insights */}
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Insights */}
-        <Card className="md:col-span-2 overflow-hidden">
-          <CardHeader className="bg-[#F5F3FF]/50 border-b border-brand-border pb-4">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-[#A78BFA]/20 rounded-[8px]">
-                 <Lightbulb className="h-5 w-5 text-[#A78BFA]" />
-              </div>
-              <CardTitle className="font-serif">Análisis Inteligente</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6 grid gap-4">
-            {insights.length === 0 ? (
-               <p className="text-sm text-brand-muted italic">Registra más ventas y gastos para generar recomendaciones.</p>
-            ) : (
-              insights.map((insight, idx) => (
-                <div key={idx} className={`flex gap-3 p-4 rounded-[12px] border 
-                  ${insight.type === 'danger' ? 'bg-[#FEE2E2] border-[#FECACA] text-[#991B1B]' : 
-                    insight.type === 'warning' ? 'bg-[#FEF3C7] border-[#FDE68A] text-[#92400E]' : 
-                    insight.type === 'info' ? 'bg-[#EFF6FF] border-[#BFDBFE] text-[#1E40AF]' : 
-                    'bg-[#D1FAE5] border-[#A7F3D0] text-[#065F46]'}`}>
-                  <AlertCircle className="h-5 w-5 shrink-0" />
-                  <p className="text-sm font-medium font-sans leading-relaxed">{insight.text}</p>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
+        <SmartDashboardAnalysis 
+          ventas={totalSales}
+          cogs={cogs}
+          gastos={totalExpenses}
+          utilidad={estimatedProfit}
+          margen={avgMargin}
+          unidades={totalSoldUnits}
+          totalGastosCount={totalExpensesCount}
+          totalVentasCount={totalSalesCount}
+        />
 
         {/* Low Stock Watchlist */}
         <Card>

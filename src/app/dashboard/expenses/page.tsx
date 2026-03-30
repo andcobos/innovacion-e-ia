@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server"
 import Link from "next/link"
 import { Button, Card, CardContent, CardHeader, CardTitle } from "@/components/ui"
 import { PlusCircle } from "lucide-react"
+import { ExpenseAIFastForm } from "@/components/ExpenseAIFastForm"
 
 export default async function ExpensesPage() {
   const supabase = await createClient()
@@ -27,6 +28,8 @@ export default async function ExpensesPage() {
           </Button>
         </Link>
       </div>
+
+      <ExpenseAIFastForm />
 
       <Card>
         <CardHeader className="pb-4 border-b border-brand-border">
