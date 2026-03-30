@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui"
 import { getDashboardInsightsAction } from "@/app/actions/gemini"
 
@@ -32,10 +32,17 @@ export function SmartDashboardAnalysis({
   const [recommendations, setRecommendations] = useState<Recommendation[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const lastFetchedParams = useRef<string>("")
 
   useEffect(() => {
     // Only fetch if data criteria is met
     if (totalVentasCount >= 1 && totalGastosCount >= 1) {
+      const currentParamsStr = `${ventas}-${cogs}-${gastos}-${utilidad}-${margen}-${unidades}`
+      if (lastFetchedParams.current === currentParamsStr) {
+        return // ya tenemos los datos y los parámetros no han cambiado
+      }
+      lastFetchedParams.current = currentParamsStr
+
       const fetchInsights = async () => {
         setLoading(true)
         setError("")
@@ -103,8 +110,8 @@ export function SmartDashboardAnalysis({
              ))}
           </>
         ) : error ? (
-           <div className="col-span-1 sm:col-span-3 p-4 bg-white/80 rounded-[12px] border border-red-100 text-red-600 text-sm font-medium">
-             {error}
+           <div className="col-span-1 sm:col-span-3 p-6 bg-[#FFF0F3]/50 rounded-[16px] border border-[#FECACA] text-center shadow-sm">
+             <p className="font-sans text-[#991B1B] font-medium">{error}</p>
            </div>
         ) : recommendations.length === 0 ? (
            <p className="col-span-3 text-brand-muted text-sm my-4 italic text-center">No se encontraron recomendaciones por ahora.</p>

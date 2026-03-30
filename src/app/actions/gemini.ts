@@ -130,6 +130,10 @@ La explicacion debe ser muy breve, máximo 12 palabras.`
   }
 }
 
+const insightsCache = new Map<string, { data: DashboardInsightsResult, timestamp: number }>()
+const CACHE_TTL = 10 * 60 * 1000 // 10 minutos
+let fallbackInsights: DashboardInsightsResult | null = null
+
 export async function getDashboardInsightsAction(
   ventas: number, 
   cogs: number, 
@@ -143,7 +147,36 @@ export async function getDashboardInsightsAction(
     return { error: "No API key configured" }
   }
 
-  const prompt = `Eres una asesora financiera amigable para microemprendedoras salvadoreñas que venden por Instagram. Tono cálido, cercano y motivador, como una amiga que entiende de finanzas. Sin tecnicismos. Datos del negocio este mes: Ventas: $${ventas}, COGS: $${cogs}, Gastos operativos: $${gastos}, Utilidad neta: $${utilidad}, Margen promedio: ${margen}%, Unidades vendidas: ${unidades}. Dame exactamente 3 recomendaciones prácticas y accionables.`
+  const cacheKey = `${ventas}-${cogs}-${gastos}-${utilidad}-${margen}-${unidades}`
+  const cached = insightsCache.get(cacheKey)
+  const now = Date.now()
+
+  // Retornar si está en caché y no ha expirado
+  if (cached && (now - cached.timestamp < CACHE_TTL)) {
+    console.log("Using cached insights")
+    return { success: true, data: cached.data }
+  }
+
+  const prompt = `Eres una asesora financiera amigable para microemprendedoras salvadoreñas que venden por Instagram.
+Con base en estos datos:
+Ventas: $${ventas}
+COGS: $${cogs}
+Gastos: $${gastos}
+Utilidad: $${utilidad}
+Margen: ${margen}%
+Unidades: ${unidades}
+
+Genera exactamente 3 recomendaciones prácticas.
+Cada recomendación debe tener:
+- icono
+- titulo
+- texto
+
+Reglas:
+- texto máximo 18 palabras
+- titulo máximo 4 palabras
+- usa solo estos iconos: ⚠️, 💡, ✅
+- devuelve únicamente JSON válido`
 
   const schema = {
     type: "object",
@@ -164,11 +197,13 @@ export async function getDashboardInsightsAction(
               type: "string"
             }
           },
-          required: ["icono", "titulo", "texto"]
+          required: ["icono", "titulo", "texto"],
+          additionalProperties: false
         }
       }
     },
-    required: ["recomendaciones"]
+    required: ["recomendaciones"],
+    additionalProperties: false
   }
 
   try {
@@ -183,9 +218,9 @@ export async function getDashboardInsightsAction(
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 700,
+            maxOutputTokens: 1400,
             responseMimeType: "application/json",
-            responseSchema: schema
+            responseJsonSchema: schema
           }
         }),
       }
@@ -195,6 +230,26 @@ export async function getDashboardInsightsAction(
       const status = response.status
       const body = await response.text()
       console.error(`Gemini API Error - Status: ${status}`, body)
+      
+      if (status === 429) {
+        if (fallbackInsights) {
+          return { success: true, data: fallbackInsights }
+        }
+        
+        let retryDelayText = ""
+        try {
+          const errJson = JSON.parse(body)
+          const retryInfo = errJson.error?.details?.find((d: { "@type": string; retryDelay?: string }) => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo')
+          if (retryInfo?.retryDelay) {
+            retryDelayText = ` (Reintenta en ${retryInfo.retryDelay})`
+          }
+        } catch (e) {
+          // ignorar error de parseo del retryDelay
+        }
+        
+        return { error: `La IA está temporalmente ocupada. Vuelve a intentarlo en unos segundos 💛${retryDelayText}` }
+      }
+      
       throw new Error("Error en la solicitud a Gemini")
     }
 
@@ -203,6 +258,13 @@ export async function getDashboardInsightsAction(
     
     if (candidate?.finishReason) {
       console.log("Insights Finish Reason:", candidate.finishReason)
+      if (candidate.finishReason === "MAX_TOKENS") {
+        if (fallbackInsights) {
+          console.log("Using fallback insights after MAX_TOKENS")
+          return { success: true, data: fallbackInsights }
+        }
+        return { error: "La IA devolvió una respuesta incompleta. Inténtalo de nuevo en unos segundos." }
+      }
     }
 
     let rawText = candidate?.content?.parts?.[0]?.text
@@ -219,7 +281,11 @@ export async function getDashboardInsightsAction(
       const parsed = JSON.parse(rawText)
       
       if (parsed && typeof parsed === "object" && "recomendaciones" in parsed) {
-         return { success: true, data: parsed as DashboardInsightsResult }
+         const resultData = parsed as DashboardInsightsResult
+         insightsCache.set(cacheKey, { data: resultData, timestamp: Date.now() })
+         console.log("Saved insights to cache")
+         fallbackInsights = resultData
+         return { success: true, data: resultData }
       }
       return { error: "No pudimos generar recomendaciones en este momento." }
     } catch (e) {
@@ -228,6 +294,9 @@ export async function getDashboardInsightsAction(
     }
   } catch (error) {
     console.error("Gemini API Error", error)
+    if (fallbackInsights) {
+       return { success: true, data: fallbackInsights }
+    }
     return { error: "No pudimos generar recomendaciones en este momento." }
   }
 }
