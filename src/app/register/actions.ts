@@ -1,7 +1,6 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
 import { createClient } from "@/utils/supabase/server"
 
 export async function signup(formData: FormData) {
@@ -16,15 +15,17 @@ export async function signup(formData: FormData) {
     password,
     options: {
       data: {
-        full_name: fullName,
+        full_name: fullName || email.split("@")[0],
       }
     }
   })
 
   if (error) {
-    return redirect(`/register?message=${encodeURIComponent(error.message)}`)
+    return { error: error.message }
   }
 
   revalidatePath("/", "layout")
-  redirect("/onboarding")
+
+  // Detenemos la redireccion para mostrar feedback interactivamente
+  return { success: true }
 }

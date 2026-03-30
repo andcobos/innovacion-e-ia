@@ -60,8 +60,9 @@ export default async function OnboardingPage(props: { searchParams: Promise<{ er
                     name="businessCategory" 
                     required 
                     className="flex h-[48px] w-full rounded-[12px] border border-brand-border bg-white px-4 py-2 text-sm text-brand-text focus-visible:outline-none focus-visible:border-2 focus-visible:border-brand-primary focus-visible:ring-0 transition-all font-sans"
+                    defaultValue=""
                   >
-                    <option value="" disabled selected>Selecciona una categoría</option>
+                    <option value="" disabled>Selecciona una categoría</option>
                     <option value="Ropa y Accesorios">Ropa y Accesorios</option>
                     <option value="Comida y Postres">Comida y Postres</option>
                     <option value="Belleza y Cuidado Personal">Belleza y Cuidado Personal</option>
