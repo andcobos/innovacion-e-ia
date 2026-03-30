@@ -25,7 +25,7 @@ export default async function NewSalePage(props: { searchParams: Promise<{ error
       <div className="flex items-center gap-4">
         <Link href="/dashboard/sales">
           <Button variant="ghost" size="icon" className="rounded-full bg-white border border-brand-border shadow-sm hover:translate-y-0">
-             <ArrowLeft className="h-5 w-5 text-brand-text" />
+            <ArrowLeft className="h-5 w-5 text-brand-text" />
           </Button>
         </Link>
         <div>
@@ -40,13 +40,14 @@ export default async function NewSalePage(props: { searchParams: Promise<{ error
             <form action={createSale} className="grid gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="productId">Producto Vendido</Label>
-                <select 
-                  id="productId" 
-                  name="productId" 
-                  required 
+                <select
+                  id="productId"
+                  name="productId"
+                  required
+                  defaultValue=""
                   className="flex h-[48px] w-full rounded-[12px] border border-brand-border bg-white px-4 py-2 text-sm text-brand-text focus-visible:outline-none focus-visible:border-2 focus-visible:border-brand-primary focus-visible:ring-0 transition-all font-sans"
                 >
-                  <option value="" disabled selected>Selecciona un producto</option>
+                  <option value="" disabled>Selecciona un producto</option>
                   {products.map((product) => (
                     <option key={product.id} value={product.id}>
                       {product.name} (Stock: {product.stock} - ${product.sale_price})
@@ -97,7 +98,7 @@ export default async function NewSalePage(props: { searchParams: Promise<{ error
           ) : (
             <div className="text-center py-12 px-6">
               <div className="mx-auto w-16 h-16 bg-brand-secondary/50 flex items-center justify-center rounded-full mb-4">
-                 <PackageIcon className="h-8 w-8 text-brand-primary" />
+                <PackageIcon className="h-8 w-8 text-brand-primary" />
               </div>
               <p className="mb-6 text-brand-text font-medium font-sans">No tienes productos activos para vender.</p>
               <Link href="/dashboard/products/new">
